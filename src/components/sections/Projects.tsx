@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Github, ExternalLink, Info, X, Cpu, Code2, Rocket } from 'lucide-react';
 
-type ProjectCategory = 'AI/ML' | 'Full Stack' | 'Cyber Security' | 'Geospatial' | 'Other';
+type ProjectCategory = 'AI/ML' | 'Full Stack' | 'Cyber Security' | 'QA' | 'Geospatial' | 'Other';
 
 interface Project {
   title: string;
@@ -43,7 +43,7 @@ const projects: Project[] = [
     title: "AquaVision AI",
     description: "Geospatial groundwater intelligence platform for village-level water security. Fuses satellite data and ground sensors to estimate groundwater levels, generate 3-month forecasts, detect anomalies, and deliver actionable advisories to farmers via a mobile-first portal.",
     image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=2080&auto=format&fit=crop",
-    category: "Geospatial",
+    category: "AI/ML",
     tech: ["FastAPI", "PostGIS", "Redis", "XGBoost", "ST-GNN"],
     github: "#",
     link: "#",
@@ -91,29 +91,74 @@ const projects: Project[] = [
       stack: ["Node.js 20 LTS", "Express.js", "TypeScript", "Supabase (Postgres)", "OpenAI GPT-4o"]
     }
   },
+  {
+    title: "Sentinal Guard",
+    description: "Advanced network security monitoring system with real-time threat detection and automated response protocols. Implements zero-trust architecture principles.",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
+    category: "Cyber Security",
+    tech: ["Python", "Suricata", "Elasticsearch", "React"],
+    github: "#",
+    link: "#",
+    details: {
+      architecture: "SIEM-inspired architecture utilizing Suricata for IDS/IPS and ELK stack for log orchestration.",
+      features: [
+        "Real-time Packet Inspection",
+        "Anomalous Traffic Detection",
+        "Automated Firewall Rule Injection",
+        "Security Audit Reporting"
+      ],
+      stack: ["Python", "Bash", "Suricata", "Elasticsearch", "Kibana", "React"]
+    }
+  },
+  {
+    title: "TestFlow Pro",
+    description: "Comprehensive automated testing suite for microservices. Features distributed load testing, visual regression, and integrated CI/CD quality gates.",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop",
+    category: "QA",
+    tech: ["Playwright", "Jest", "K6", "GitHub Actions"],
+    github: "#",
+    link: "#",
+    details: {
+      architecture: "Modular testing framework designed for scalability and high-concurrency performance validation.",
+      features: [
+        "Cross-browser Visual Regression",
+        "High-load Performance Testing",
+        "API Contract Validation",
+        "Automated Flaky Test Detection"
+      ],
+      stack: ["TypeScript", "Playwright", "Jest", "K6", "Docker", "GitHub Actions"]
+    }
+  },
 ];
 
 const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('All Projects');
+
+  const tabs = ['All Projects', 'AI/ML', 'Full Stack', 'Cyber Security', 'QA'];
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
+        staggerChildren: 0.1
       }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, x: 40 },
+    hidden: { opacity: 0, y: 20 },
     show: { 
       opacity: 1, 
-      x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
     }
   };
+
+  const filteredCategories = activeTab === 'All Projects' 
+    ? Array.from(new Set(projects.map(p => p.category)))
+    : [activeTab as ProjectCategory];
 
   return (
     <section id="projects" className="section-wrap">
@@ -132,73 +177,109 @@ const Projects = () => {
           </p>
         </motion.div>
 
-        {Array.from(new Set(projects.map(p => p.category))).map((category) => {
-          const categoryProjects = projects.filter(p => p.category === category);
-          return (
-            <div key={category} className="mt-10">
-              <motion.div
-                variants={item}
-                className="section-header text-center"
-                style={{ marginBottom: '1.5rem' }}
+        {/* 📑 Filter Tabs */}
+        <motion.div variants={item} className="filter-tabs-wrapper">
+          <div className="tabs-inner">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
               >
-                <h3 className="text-2xl font-bold text-gradient">{category} Projects</h3>
-              </motion.div>
+                {tab}
+              </button>
+            ))}
+          </div>
+        </motion.div>
 
-              <div className="grid grid-cols-2">
-                {categoryProjects.map((project) => (
-                  <motion.div
-                    key={project.title}
-                    variants={item}
-                    className="glass project-card hover-lift"
-                  >
-                    <div className="project-img-wrap">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="project-img"
-                      />
-                    </div>
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {filteredCategories.map((category) => {
+              const categoryProjects = projects.filter(p => p.category === category);
+              if (categoryProjects.length === 0) return null;
 
-                    <div className="project-info">
-                      <div className="project-text">
-                        <h3 className="text-2xl font-bold">{project.title}</h3>
-                        <p className="text-[var(--text-secondary)] text-sm mt-4">
-                          {project.description}
-                        </p>
-                      </div>
+              return (
+                <div key={category} className="mb-16 last:mb-0">
+                  {activeTab === 'All Projects' && (
+                    <motion.div
+                      variants={item}
+                      className="section-header text-center"
+                      style={{ marginBottom: '2.5rem' }}
+                    >
+                      <h3 className="text-2xl font-bold text-gradient">{category} Projects</h3>
+                    </motion.div>
+                  )}
 
-                      <div className="tech-list flex gap-2">
-                        {project.tech.map(t => (
-                          <span key={t} className="tech-pill">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="project-links flex items-center justify-between mt-4">
-                        <div className="flex gap-4">
-                          <a href={project.github} className="social-icon">
-                            <Github size={20} />
-                          </a>
-                          <a href={project.link} className="social-icon">
-                            <ExternalLink size={20} />
-                          </a>
+                  <div className="grid grid-cols-2">
+                    {categoryProjects.map((project) => (
+                      <motion.div
+                        key={project.title}
+                        layout
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="glass project-card hover-lift"
+                      >
+                        <div className="project-img-wrap">
+                          <img
+                            src={project.image}
+                            alt={project.title}
+                            className="project-img"
+                          />
+                          <div className="absolute top-4 right-4 z-10">
+                            <span className="glass-pill text-[10px] py-1 px-3">
+                              {project.category}
+                            </span>
+                          </div>
                         </div>
-                        <button 
-                          onClick={() => setSelectedProject(project)}
-                          className="flex items-center justify-center gap-2 text-[var(--accent-cyan)] font-bold text-sm bg-transparent border-none cursor-pointer hover:brightness-125"
-                          style={{ lineHeight: 1, whiteSpace: 'nowrap' }}
-                        >
-                          View Details <Info size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+
+                        <div className="project-info">
+                          <div className="project-text">
+                            <h3 className="text-2xl font-bold">{project.title}</h3>
+                            <p className="text-[var(--text-secondary)] text-sm mt-4">
+                              {project.description}
+                            </p>
+                          </div>
+
+                          <div className="tech-list flex gap-2 flex-wrap">
+                            {project.tech.map(t => (
+                              <span key={t} className="tech-pill">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+
+                          <div className="project-links flex items-center justify-between mt-4">
+                            <div className="flex gap-4">
+                              <a href={project.github} className="social-icon">
+                                <Github size={20} />
+                              </a>
+                              <a href={project.link} className="social-icon">
+                                <ExternalLink size={20} />
+                              </a>
+                            </div>
+                            <button 
+                              onClick={() => setSelectedProject(project)}
+                              className="flex items-center justify-center gap-2 text-[var(--accent-cyan)] font-bold text-sm bg-transparent border-none cursor-pointer hover:brightness-125"
+                              style={{ lineHeight: 1, whiteSpace: 'nowrap' }}
+                            >
+                              View Details <Info size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
 
       <AnimatePresence>
