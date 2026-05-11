@@ -45,8 +45,8 @@ const projects: Project[] = [
     image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=2080&auto=format&fit=crop",
     category: "AI/ML",
     tech: ["FastAPI", "PostGIS", "Redis", "XGBoost", "ST-GNN"],
-    github: "#",
-    link: "#",
+    github: "https://github.com/subhash068/AI-Driven-Groundwater-Estimation-System-app",
+    link: "https://ai-driven-groundwater-estimation-sy.vercel.app/",
     details: {
       architecture: "Digital Twin per village using spatio-temporal graph neural networks (ST-GNNs) + XGBoost regression. Scheduled geospatial pipelines feed a forecasting & anomaly-detection layer, cached for low-latency dashboard and farmer portal delivery.",
       features: [
@@ -78,8 +78,8 @@ const projects: Project[] = [
     image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop",
     category: "Full Stack",
     tech: ["Node.js", "Express", "Supabase", "TypeScript", "OpenAI"],
-    github: "#",
-    link: "#",
+    github: "https://github.com/subhash068/Full-Stack-E-Commerce-Platform",
+    link: "https://ruchiragam.vercel.app/",
     details: {
       architecture: "Clean Architecture implementation in Node.js with a monorepo structure and Supabase/Postgres backend.",
       features: [
